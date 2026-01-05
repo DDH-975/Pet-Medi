@@ -1,6 +1,7 @@
 package com.project.petmedicalmap
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.petmedicalmap.databinding.ActivityMainBinding
+import com.project.petmedicalmap.roomDB.JsonReader
+import com.project.petmedicalmap.roomDB.hospital.HospitalMapDto
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityMainBinding
@@ -32,6 +35,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val hosjsonString = JsonReader.readJson(context = this, fileName = "hospital.json")
+        val parjsonString = JsonReader.readJson(context = this, fileName = "pharmacy.json")
+
 
 
         // 1. View 연결 및 Behavior 획득
