@@ -7,8 +7,7 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-/app/src/main/assets/hospital.json
-/app/src/main/assets/pharmacy.json
+/app/src/main/assets/
 .DS_Store
 /build
 /captures
