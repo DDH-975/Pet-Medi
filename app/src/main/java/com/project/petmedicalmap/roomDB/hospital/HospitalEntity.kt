@@ -6,24 +6,26 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "hospitals")
 data class HospitalEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
     val name: String,
 
     @SerializedName("RN_ADDR")
-    val addres: String,
+    val addres: String?,
 
     @SerializedName("OPR_TIME_INFO")
-    val oprTimeInfo: String,
+    val oprTimeInfo: String?,
 
     @SerializedName("RPRS_TELNO")
-    val tel: String,
+    val tel: String?,
 
     @SerializedName("HMPG_URL")
-    val homepage: String,
+    val homepage: String?,
 
     @SerializedName("LA_VLUE")
-    val lat: Double,
+    val lat: Double?,
 
     @SerializedName("LO_VLUE")
-    val lng: Double
+    val lng: Double?
 )
