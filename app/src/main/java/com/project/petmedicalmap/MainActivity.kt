@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // 버튼 등을 눌러 프로그래밍 방식으로 상태 변경 시
     private fun expandSheet() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-
     }
 
 
