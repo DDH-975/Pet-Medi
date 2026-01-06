@@ -10,19 +10,19 @@ import com.project.petmedicalmap.roomDB.pharmacy.PharmacyDao
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyEntity
 
 @Database(entities = [HospitalEntity::class, PharmacyEntity::class], version = 1)
-abstract class DataBase : RoomDatabase() {
+abstract class AppDataBase : RoomDatabase() {
     abstract fun hosDao(): HospitalDao
     abstract fun pharDao(): PharmacyDao
 
     companion object {
         @Volatile
-        private var INSTANCE: DataBase? = null
+        private var INSTANCE: AppDataBase? = null
 
-        fun getInstance(context: Context): DataBase =
+        fun getInstance(context: Context): AppDataBase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
-                    DataBase::class.java,
+                    AppDataBase::class.java,
                     "app_db"
                 ).build().also { INSTANCE = it }
             }
