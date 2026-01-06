@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -15,12 +16,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.petmedicalmap.databinding.ActivityMainBinding
-import com.project.petmedicalmap.roomDB.JsonReader
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var hospitalviewModel: HospitalViewModel
+    private lateinit var pharmacyViewModel: PharmacyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +36,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
 
-        val hosjsonString = JsonReader.readJson(context = this, fileName = "hospital.json")
-        val parjsonString = JsonReader.readJson(context = this, fileName = "pharmacy.json")
+        hospitalviewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
+        pharmacyViewModel = ViewModelProvider(this).get(PharmacyViewModel::class.java)
 
 
         // 1. View 연결 및 Behavior 획득
