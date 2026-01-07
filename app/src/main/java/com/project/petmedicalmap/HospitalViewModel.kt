@@ -1,12 +1,10 @@
 package com.project.petmedicalmap
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-
 import com.project.petmedicalmap.roomDB.AppDataBase
 import com.project.petmedicalmap.roomDB.hospital.HospitalEntity
 import com.project.petmedicalmap.roomDB.hospital.HospitalRepository
@@ -26,25 +24,23 @@ class HospitalViewModel(application: Application) : AndroidViewModel(application
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.insertData() }
+            repository.insertData()
+        }
     }
 
-    fun getHosAllData(){
+    fun getHosAllData() {
         viewModelScope.launch(Dispatchers.IO) {
             val hosData = repository.getHospitalData()
             hospitalData.postValue(hosData)
         }
     }
 
-    fun get24thHosData(){
+    fun get24thHosData() {
         viewModelScope.launch(Dispatchers.IO) {
             val hos24thData = repository.get24thHosData()
             hospiatal24thData.postValue(hos24thData)
         }
     }
-
-
-
 
 
 }

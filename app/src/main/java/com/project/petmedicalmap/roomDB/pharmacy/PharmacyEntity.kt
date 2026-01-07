@@ -9,7 +9,7 @@ data class PharmacyEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val name:String,
+    val name: String,
 
     @SerializedName("RN_ADDR")
     val address: String?,

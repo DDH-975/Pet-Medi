@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class PharmacyViewModel(application: Application) : AndroidViewModel(application) {
     val db = AppDataBase.getInstance(application)
-    val repo = PharmacyRepository(application,  db.pharDao())
+    val repo = PharmacyRepository(application, db.pharDao())
 
     val pharmacyData = MutableLiveData<List<PharmacyEntity>>()
     val _pharmacyData: LiveData<List<PharmacyEntity>> = pharmacyData
