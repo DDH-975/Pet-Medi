@@ -1,7 +1,6 @@
 package com.project.petmedicalmap.roomDB.pharmacy
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.project.petmedicalmap.roomDB.JsonReader
@@ -21,7 +20,7 @@ class PharmacyRepository(
         val pharmacyMap: PharmacyMapDto =
             gson.fromJson(pharJsonStr, object : TypeToken<PharmacyMapDto>() {}.type)
 
-        val pharmacyEntities = pharmacyMap.map{ (pharmacyName, pharmacyDto)->
+        val pharmacyEntities = pharmacyMap.map { (pharmacyName, pharmacyDto) ->
             PharmacyEntity(
                 name = pharmacyName,
                 oprTimeInfo = pharmacyDto.OPR_TIME_INFO,
@@ -34,7 +33,12 @@ class PharmacyRepository(
         }
 
         dao.insertAllPharmacies(pharmacyEntities)
+    }
 
+
+    suspend fun getParmacyData(): List<PharmacyEntity> {
+        val pharmacyAllData = dao.getAllPharmacyData()
+        return pharmacyAllData
     }
 
 
