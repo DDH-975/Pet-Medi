@@ -44,6 +44,16 @@ class HospitalRepository(
         Log.d("db_test", "after insert count = $countAfter")
     }
 
+    suspend fun getHospitalData() : List<HospitalEntity>{
+        val hospitalData = dao.getAllHospitalData()
+        return hospitalData
+    }
+
+    suspend fun get24thHosData() : List<HospitalEntity>{
+        val Hos24thData = dao.getDataLike24()
+        return Hos24thData
+    }
+
 
 
 
