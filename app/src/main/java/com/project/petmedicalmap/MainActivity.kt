@@ -1,23 +1,33 @@
 package com.project.petmedicalmap
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.petmedicalmap.databinding.ActivityMainBinding
 import com.project.petmedicalmap.roomDB.hospital.HospitalEntity
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyEntity
+
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
@@ -25,8 +35,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var hospitalviewModel: HospitalViewModel
     private lateinit var pharmacyViewModel: PharmacyViewModel
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var hospitalList: List<HospitalEntity> = emptyList()
     private var pharmacyList: List<PharmacyEntity> = emptyList()
+    private var selectedMarker: Marker? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +53,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         hospitalviewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
         pharmacyViewModel = ViewModelProvider(this).get(PharmacyViewModel::class.java)
 
@@ -67,6 +80,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 showParmacyMarkers(pharmacyList)
             }
         }
+
+
+        val locationPermissionRequest = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            if (permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false)) {
+                moveToMyLocation()
+            }
+        }
+
+        locationPermissionRequest.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
 
 
         // 1. View 연결 및 Behavior 획득
@@ -138,15 +167,37 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            mMap.isMyLocationEnabled = true
+        }
+
+        //마커 클릭 리스너
+        mMap.setOnMarkerClickListener({ marker ->
+            val markerTitle = marker.title
+            selectedMarker?.setIcon(
+                BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_RED
+                )
+            )
+            Toast.makeText(this, markerTitle, Toast.LENGTH_SHORT).show()
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+
+            selectedMarker = marker
+            false
+        })
+
         if (hospitalList.isNotEmpty()) {
             showHospitalMarkers(hospitalList)
-
         }
+
     }
 
     // 병원 리스트를 받아 지도에 병원 마커를 표시하는 함수
     private fun showHospitalMarkers(list: List<HospitalEntity>) {
         mMap.clear()
+        selectedMarker = null
 
         list.forEach { list ->
             val lat = list.lat
@@ -157,13 +208,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 mMap.addMarker(
                     MarkerOptions().position(position).title(list.name)
                 )
-            }
-        }
-
-        list.firstOrNull()?.let {
-            if (it.lat != null && it.lng != null) {
-                val pos = LatLng(it.lat, it.lng)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14f))
             }
         }
     }
@@ -171,6 +215,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     // 약국 리스트를 받아 지도에 약국 마커를 표시하는 함수
     private fun showParmacyMarkers(list: List<PharmacyEntity>) {
         mMap.clear()
+        selectedMarker = null
 
         list.forEach { list ->
             val lat = list.lat
@@ -181,13 +226,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 mMap.addMarker(
                     MarkerOptions().position(position).title(list.name)
                 )
+
             }
         }
+    }
 
-        list.firstOrNull()?.let {
-            if (it.lat != null && it.lng != null) {
-                val pos = LatLng(it.lat, it.lng)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14f))
+    // 내 위치 확인 후 화면 이동 메서드
+    private fun moveToMyLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    val latLng = LatLng(location.latitude, location.longitude)
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+                }
             }
         }
     }
