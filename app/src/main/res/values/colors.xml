@@ -3,4 +3,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="vivid_sky_blue">#3399ff</color>
+    <color name="splash_background">#2E7D32</color>
 </resources>
