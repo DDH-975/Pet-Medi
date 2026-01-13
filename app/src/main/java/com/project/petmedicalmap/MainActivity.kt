@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -175,17 +174,27 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //마커 클릭 리스너
         mMap.setOnMarkerClickListener({ marker ->
-            val markerTitle = marker.title
             selectedMarker?.setIcon(
                 BitmapDescriptorFactory.defaultMarker(
                     BitmapDescriptorFactory.HUE_RED
                 )
             )
-            Toast.makeText(this, markerTitle, Toast.LENGTH_SHORT).show()
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 
             selectedMarker = marker
-            false
+
+            when (val data = marker.tag) {
+                is HospitalEntity -> {
+                    bindHospitalToBottomSheet(data)
+                }
+
+                is PharmacyEntity -> {
+                    bindPharmacyToBottomSheet(data)
+                }
+            }
+
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            true
         })
 
         if (hospitalList.isNotEmpty()) {
@@ -198,16 +207,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun showHospitalMarkers(list: List<HospitalEntity>) {
         mMap.clear()
         selectedMarker = null
-
         list.forEach { list ->
             val lat = list.lat
             val lng = list.lng
 
             if (lat != null && lng != null) {
                 val position = LatLng(lat, lng)
-                mMap.addMarker(
+                val marker = mMap.addMarker(
                     MarkerOptions().position(position).title(list.name)
                 )
+                marker?.tag = list
             }
         }
     }
@@ -223,10 +232,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             if (lat != null && lng != null) {
                 val position = LatLng(lat, lng)
-                mMap.addMarker(
+                val marker = mMap.addMarker(
                     MarkerOptions().position(position).title(list.name)
                 )
-
+                marker?.tag = list
             }
         }
     }
@@ -243,6 +252,44 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
                 }
             }
+        }
+    }
+
+    private fun bindHospitalToBottomSheet(hospital: HospitalEntity) {
+        binding.tvName.apply{
+            setVisibility(View.VISIBLE)
+            setText("${hospital.name}")
+        }
+        binding.tvAddress.apply{
+            setVisibility(View.VISIBLE)
+            setText("${hospital.addres}")
+        }
+        if (hospital.tel != null) {
+            binding.tvbtnCall.apply {
+                setVisibility(View.VISIBLE)
+                setText("${hospital.tel}")
+            }
+        }
+        binding.tvbtnDirection.setVisibility(View.VISIBLE)
+        binding.tv.setVisibility(View.VISIBLE)
+
+        if (hospital.homepage != null) {
+            binding.tvHomePg.apply {
+                setVisibility(View.VISIBLE)
+            }
+        }
+
+
+        binding.tvDate.setText("${hospital.oprTimeInfo}")
+    }
+
+    private fun bindPharmacyToBottomSheet(parymacy: PharmacyEntity) {
+        binding.tvName.setText("${parymacy.name}")
+        binding.tvAddress.setText("${parymacy.address}")
+        binding.tvbtnDirection.setVisibility(View.VISIBLE)
+        binding.tvbtnCall.apply {
+            setVisibility(View.VISIBLE)
+            setText("${parymacy.tel}")
         }
     }
 }
