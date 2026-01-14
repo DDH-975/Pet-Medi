@@ -96,10 +96,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="410dp"
+        android:layout_height="490dp"
         android:background="@drawable/bg_bottom_sheet"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="155dp"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="200dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <!-- 드래그 핸들 -->
@@ -113,14 +113,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 선택된 장소 요약 -->
+
         <androidx.cardview.widget.CardView
             android:id="@+id/selectedCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/handle">
@@ -131,100 +131,119 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <!-- 병원 / 약국 이름 -->
                 <TextView
                     android:id="@+id/tv_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="#3399ff"
-                    android:textSize="22dp"
+                    android:text="119동물병원"
+                    android:textColor="#222222"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
+                <!-- 주소 -->
                 <TextView
                     android:id="@+id/tv_Address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text=""
-                    android:textColor="#666666"
-                    android:textSize="15dp"
+                    android:text="대구광역시 어쩌동 어쩌구 어딘가"
+                    android:textColor="#777777"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tv_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:drawableStart="@drawable/baseline_call_24"
+                    android:text="053-123-4567"
+                    android:textColor="#444444"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <!-- 액션 버튼 영역 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-                    <TextView
-                        android:visibility="gone"
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/tvbtn_call"
-                        android:layout_width="match_parent"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:clickable="true"
-                        android:drawableStart="@drawable/baseline_call_24"
-                        android:focusable="true"
-                        android:text="165416514658"
-                        android:textColor="#556B2F"
-                        android:textSize="16dp"
-                        android:textStyle="bold"></TextView>
+                        android:text="전화"
+                        app:icon="@drawable/baseline_call_24"
+                        app:iconPadding="6dp" />
 
-                    <TextView
-                        android:visibility="invisible"
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/tvbtn_Direction"
-                        android:layout_width="match_parent"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:clickable="true"
-                        android:drawableStart="@drawable/baseline_directions_24"
-                        android:drawablePadding="6dp"
-                        android:focusable="true"
                         android:text="길찾기"
-                        android:textColor="#ff0000"
-                        android:textSize="16dp"
-                        android:textStyle="bold" />
+                        app:icon="@drawable/baseline_directions_24"
+                        app:iconPadding="6dp" />
                 </LinearLayout>
 
+                <!-- 구분선 -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="16dp"
+                    android:background="#EEEEEE" />
+
+                <!-- 영업시간 -->
                 <TextView
                     android:id="@+id/tv"
-                    android:visibility="invisible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="영업 시간"
-                    android:layout_marginTop="23dp"
-                    android:textSize="19dp"
-                    android:textStyle="bold"></TextView>
+                    android:text="영업시간"
+                    android:textColor="#222222"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="16dp"
-                    android:textStyle="bold"></TextView>
+                    android:layout_marginTop="6dp"
+                    android:text="월 10:00 - 21:00 | 화 10:00 - 21:00 | 수 10:00 - 19:00 | 목 10:00 - 21:00 | 금 10:00 - 21:00 | 토 10:00 - 19:00 | 일 10:00 - 19:00 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간"
+                    android:textColor="#444444"
+                    android:textSize="14sp" />
 
+                <!-- 홈페이지 -->
                 <TextView
                     android:id="@+id/tv_homePg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:clickable="true"
                     android:drawableStart="@drawable/outline_globe_asia_24"
-                    android:text="홈페이지 연결"
-                    android:textSize="16dp"
-                    android:textStyle="bold"></TextView>
+                    android:drawablePadding="6dp"
+                    android:focusable="true"
+                    android:text="홈페이지 바로가기"
+                    android:textColor="#1E88E5"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
+                <!-- Footer -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="35dp"
-                    android:textColor="@color/splash_background"
-                    android:text="DataBase By  ㈜PetOn"
-                    android:textSize="12dp"
-                    android:textStyle="bold"></TextView>
-
+                    android:layout_marginTop="16dp"
+                    android:text="DataBase By ㈜PetOn"
+                    android:textColor="#AAAAAA"
+                    android:textSize="12sp" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
