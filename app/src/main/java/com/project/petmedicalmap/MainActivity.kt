@@ -1,7 +1,9 @@
 package com.project.petmedicalmap
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -35,6 +37,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var hospitalviewModel: HospitalViewModel
     private lateinit var pharmacyViewModel: PharmacyViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var callIntent: Intent
+    private lateinit var searchHMPGIntent: Intent
     private var hospitalList: List<HospitalEntity> = emptyList()
     private var pharmacyList: List<PharmacyEntity> = emptyList()
     private var selectedMarker: Marker? = null
@@ -51,7 +55,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         hospitalviewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
         pharmacyViewModel = ViewModelProvider(this).get(PharmacyViewModel::class.java)
@@ -71,7 +74,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 showHospitalMarkers(hospitalList)
             }
         }
-
 
         pharmacyViewModel._pharmacyData.observe(this) { pharmacyData ->
             pharmacyList = pharmacyData
@@ -99,6 +101,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // 1. View 연결 및 Behavior 획득
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         // 2. 콜백 설정 (상태 변경 감지)
         bottomSheetBehavior.addBottomSheetCallback(object :
@@ -134,10 +138,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding.radioBtnHos.setOnCheckedChangeListener { _, Checked ->
             if (Checked) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 binding.check24Hos.visibility = View.VISIBLE
                 hospitalviewModel.getHosAllData()
 
             } else {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 binding.check24Hos.apply {
                     visibility = View.GONE
                     isChecked = false
@@ -149,8 +155,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding.check24Hos.setOnCheckedChangeListener { _, Checked ->
             if (Checked) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 hospitalviewModel.get24thHosData()
             } else {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 hospitalviewModel.getHosAllData()
             }
         }
@@ -174,6 +182,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //마커 클릭 리스너
         mMap.setOnMarkerClickListener({ marker ->
+
             selectedMarker?.setIcon(
                 BitmapDescriptorFactory.defaultMarker(
                     BitmapDescriptorFactory.HUE_RED
@@ -255,41 +264,144 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    //hospital 데이터를 BottomSheet에 바인딩하는 메서드
     private fun bindHospitalToBottomSheet(hospital: HospitalEntity) {
-        binding.tvName.apply{
+        binding.tvName.apply {
             setVisibility(View.VISIBLE)
             setText("${hospital.name}")
         }
-        binding.tvAddress.apply{
-            setVisibility(View.VISIBLE)
-            setText("${hospital.addres}")
+
+        if (!hospital.addres.equals("")) {
+            binding.tvAddress.apply {
+                setVisibility(View.VISIBLE)
+                setText("${hospital.addres}")
+            }
+
+            binding.tvbtnDirection.apply {
+                setVisibility(View.VISIBLE)
+
+                setOnClickListener {
+                    openNaverMap(hospital.lat!!, hospital.lng!!, hospital.name)
+                }
+            }
         }
-        if (hospital.tel != null) {
-            binding.tvbtnCall.apply {
+
+        if (!hospital.tel.equals("")) {
+            binding.tvPhone.apply {
                 setVisibility(View.VISIBLE)
                 setText("${hospital.tel}")
             }
-        }
-        binding.tvbtnDirection.setVisibility(View.VISIBLE)
-        binding.tv.setVisibility(View.VISIBLE)
 
-        if (hospital.homepage != null) {
+            callIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${hospital.tel}"))
+            binding.tvbtnCall.apply {
+                setVisibility(View.VISIBLE)
+                setOnClickListener {
+                    startActivity(callIntent)
+                }
+            }
+        }
+
+        if (!hospital.oprTimeInfo.equals("")) {
+            binding.tv.setVisibility(View.VISIBLE)
+            binding.tvDate.apply {
+                setVisibility(View.VISIBLE)
+                setText("${hospital.oprTimeInfo}")
+            }
+        }
+
+        if (!hospital.homepage.equals("")) {
+            searchHMPGIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("${hospital.homepage}")
+            )
             binding.tvHomePg.apply {
                 setVisibility(View.VISIBLE)
+                setOnClickListener {
+                    startActivity(searchHMPGIntent)
+                }
+            }
+        }
+    }
+
+    // parmacy 데이터를 BottomSheet에 바인딩하는 메서드
+    private fun bindPharmacyToBottomSheet(parymacy: PharmacyEntity) {
+        binding.tvName.apply {
+            setVisibility(View.VISIBLE)
+            setText("${parymacy.name}")
+        }
+
+        if (!parymacy.address.equals("")) {
+            binding.tvAddress.apply {
+                setVisibility(View.VISIBLE)
+                setText("${parymacy.address}")
             }
         }
 
 
-        binding.tvDate.setText("${hospital.oprTimeInfo}")
+        binding.tvbtnDirection.apply {
+            setVisibility(View.VISIBLE)
+
+            setOnClickListener {
+                openNaverMap(parymacy.lat!!, parymacy.lng!!, parymacy.name)
+            }
+        }
+
+
+        if (!parymacy.tel.equals("")) {
+            binding.tvPhone.apply {
+                setVisibility(View.VISIBLE)
+                setText("${parymacy.tel}")
+            }
+
+            callIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${parymacy.tel}"))
+            binding.tvbtnCall.apply {
+                setVisibility(View.VISIBLE)
+                setOnClickListener {
+                    startActivity(callIntent)
+                }
+            }
+        }
+
+        if (!parymacy.oprTimeInfo.equals("")) {
+            binding.tv.setVisibility(View.VISIBLE)
+            binding.tvDate.apply {
+                setVisibility(View.VISIBLE)
+                setText("${parymacy.oprTimeInfo}")
+            }
+        }
+
+        if (!parymacy.homePage.equals("")) {
+            searchHMPGIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("${parymacy.homePage}")
+            )
+
+            binding.tvHomePg.apply {
+                setVisibility(View.VISIBLE)
+                setOnClickListener {
+                    startActivity(searchHMPGIntent)
+                }
+            }
+        }
     }
 
-    private fun bindPharmacyToBottomSheet(parymacy: PharmacyEntity) {
-        binding.tvName.setText("${parymacy.name}")
-        binding.tvAddress.setText("${parymacy.address}")
-        binding.tvbtnDirection.setVisibility(View.VISIBLE)
-        binding.tvbtnCall.apply {
-            setVisibility(View.VISIBLE)
-            setText("${parymacy.tel}")
+    // 네이버 지도 연결
+    private fun openNaverMap(lat: Double, lng: Double, name: String) {
+        val uri = Uri.parse(
+            "nmap://place?lat=$lat&lng=$lng&name=${Uri.encode(name)}"
+        )
+
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            // 네이버 지도 앱 없으면 플레이스토어로 이동
+            val marketIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("market://details?id=com.nhn.android.nmap")
+            )
+            startActivity(marketIntent)
         }
     }
 }
