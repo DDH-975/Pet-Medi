@@ -138,7 +138,7 @@
                     android:layout_height="wrap_content"
                     android:text="119동물병원"
                     android:textColor="#222222"
-                    android:textSize="20sp"
+                    android:textSize="20dp"
                     android:textStyle="bold" />
 
                 <!-- 주소 -->
@@ -149,7 +149,8 @@
                     android:layout_marginTop="4dp"
                     android:text="대구광역시 어쩌동 어쩌구 어딘가"
                     android:textColor="#777777"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_phone"
@@ -160,7 +161,8 @@
                     android:text="053-123-4567"
                     android:textColor="#444444"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
                 <!-- 액션 버튼 영역 -->
                 <LinearLayout
@@ -177,6 +179,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="전화"
+                        android:visibility="gone"
                         app:icon="@drawable/baseline_call_24"
                         app:iconPadding="6dp" />
 
@@ -187,6 +190,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="길찾기"
+                        android:visibility="invisible"
                         app:icon="@drawable/baseline_directions_24"
                         app:iconPadding="6dp" />
                 </LinearLayout>
@@ -206,7 +210,8 @@
                     android:text="영업시간"
                     android:textColor="#222222"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:id="@+id/tv_date"
@@ -215,7 +220,8 @@
                     android:layout_marginTop="6dp"
                     android:text="월 10:00 - 21:00 | 화 10:00 - 21:00 | 수 10:00 - 19:00 | 목 10:00 - 21:00 | 금 10:00 - 21:00 | 토 10:00 - 19:00 | 일 10:00 - 19:00 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간 | 13:00 - 14:00 휴게시간"
                     android:textColor="#444444"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <!-- 홈페이지 -->
                 <TextView
@@ -230,7 +236,8 @@
                     android:text="홈페이지 바로가기"
                     android:textColor="#1E88E5"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
                 <!-- Footer -->
                 <TextView
