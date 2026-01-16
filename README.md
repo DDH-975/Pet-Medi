@@ -190,7 +190,7 @@ com.project.petmedicalmap
 ---
 
 ### 전화 기능
-<img src="screenshot/call.gif" width="225"/>
+<img src="screenshot/Call.gif" width="225"/>
 
 - 전화 버튼을 클릭하면 **전화 앱이 즉시 실행되며**,  
   해당 병원 또는 약국의 **전화번호가 자동으로 입력**됩니다.
@@ -199,7 +199,7 @@ com.project.petmedicalmap
 ---
 
 ### 길찾기 기능
-<img src="screenshot/Directions.gif" width="225"/>
+<img src="screenshot/directions.gif" width="225"/>
 
 - 길찾기 버튼 클릭 시,  
   병원(약국)의 **위도·경도 및 이름 정보가 외부 앱인 네이버 지도에 전달**됩니다.
@@ -209,7 +209,7 @@ com.project.petmedicalmap
 ---
 
 ### 홈페이지 바로 이동
-<img src="screenshot/homepage.gif" width="225"/>
+<img src="screenshot/Homepage.gif" width="225"/>
 
 - 홈페이지 정보가 존재하는 경우,  
   바텀 시트에 **‘홈페이지 바로가기’ 텍스트가 동적으로 표시**됩니다.
