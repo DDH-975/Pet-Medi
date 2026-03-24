@@ -4,8 +4,11 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.project.petmedicalmap.roomDB.JsonReader
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PharmacyRepository(
+@Singleton
+class PharmacyRepository @Inject constructor(
     private val context: Context,
     private val dao: PharmacyDao
 ) {
