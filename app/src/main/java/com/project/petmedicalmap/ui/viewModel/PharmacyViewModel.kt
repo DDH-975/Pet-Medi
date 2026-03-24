@@ -8,16 +8,18 @@ import androidx.lifecycle.viewModelScope
 import com.project.petmedicalmap.roomDB.AppDataBase
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyEntity
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PharmacyViewModel(application: Application) : AndroidViewModel(application) {
-    val db = AppDataBase.getInstance(application)
-    val repo = PharmacyRepository(application, db.pharDao())
+@HiltViewModel
+class PharmacyViewModel(
+    application: Application,
+    private val repo: PharmacyRepository
+    ) : AndroidViewModel(application) {
 
     val pharmacyData = MutableLiveData<List<PharmacyEntity>>()
     val _pharmacyData: LiveData<List<PharmacyEntity>> = pharmacyData
-
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

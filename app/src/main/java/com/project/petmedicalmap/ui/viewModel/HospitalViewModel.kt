@@ -5,15 +5,19 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.project.petmedicalmap.roomDB.AppDataBase
 import com.project.petmedicalmap.roomDB.hospital.HospitalEntity
 import com.project.petmedicalmap.roomDB.hospital.HospitalRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HospitalViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = AppDataBase.getInstance(application)
-    private val repository = HospitalRepository(application, db.hosDao())
+@HiltViewModel
+class HospitalViewModel @Inject constructor(
+    application: Application,
+    private val repository: HospitalRepository
+): AndroidViewModel(application) {
+
 
     private val hospitalData = MutableLiveData<List<HospitalEntity>>()
     val _hospitalData: LiveData<List<HospitalEntity>> = hospitalData
@@ -41,6 +45,4 @@ class HospitalViewModel(application: Application) : AndroidViewModel(application
             hospiatal24thData.postValue(hos24thData)
         }
     }
-
-
 }
