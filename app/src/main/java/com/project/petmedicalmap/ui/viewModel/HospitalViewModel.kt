@@ -14,9 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HospitalViewModel @Inject constructor(
-    application: Application,
+    private val application: Application,
     private val repository: HospitalRepository
-): AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
 
     private val hospitalData = MutableLiveData<List<HospitalEntity>>()

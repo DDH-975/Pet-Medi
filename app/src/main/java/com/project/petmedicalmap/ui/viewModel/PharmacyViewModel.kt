@@ -5,18 +5,18 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.project.petmedicalmap.roomDB.AppDataBase
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyEntity
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class PharmacyViewModel(
-    application: Application,
+class PharmacyViewModel @Inject constructor(
+    private val application: Application,
     private val repo: PharmacyRepository
-    ) : AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
     val pharmacyData = MutableLiveData<List<PharmacyEntity>>()
     val _pharmacyData: LiveData<List<PharmacyEntity>> = pharmacyData
