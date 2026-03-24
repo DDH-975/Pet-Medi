@@ -58,9 +58,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        // hospitalviewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
-        // pharmacyViewModel = ViewModelProvider(this).get(PharmacyViewModel::class.java)
-
 
         hospitalviewModel._hospitalData.observe(this) { hospitalData ->
             hospitalList = hospitalData
