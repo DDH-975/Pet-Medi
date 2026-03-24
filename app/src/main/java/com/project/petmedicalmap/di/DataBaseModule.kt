@@ -8,6 +8,7 @@ import com.project.petmedicalmap.roomDB.pharmacy.PharmacyDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -17,7 +18,7 @@ object DataBaseModule {
 
     @Provides
     @Singleton
-    fun providesDataBase(context: Context): AppDataBase {
+    fun providesDataBase(@ApplicationContext context: Context): AppDataBase {
         return Room.databaseBuilder(
             context.applicationContext,
             AppDataBase::class.java,
