@@ -6,7 +6,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.project.petmedicalmap.roomDB.JsonReader
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class HospitalRepository @Inject constructor(
     private val context: Context,
     private val dao: HospitalDao
