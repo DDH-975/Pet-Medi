@@ -8,12 +8,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,14 +28,16 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.petmedicalmap.databinding.ActivityMainBinding
 import com.project.petmedicalmap.roomDB.hospital.HospitalEntity
 import com.project.petmedicalmap.roomDB.pharmacy.PharmacyEntity
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mMap: GoogleMap
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-    private lateinit var hospitalviewModel: HospitalViewModel
-    private lateinit var pharmacyViewModel: PharmacyViewModel
+    private val pharmacyViewModel: PharmacyViewModel by viewModels()
+    private val hospitalviewModel: HospitalViewModel by viewModels()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var callIntent: Intent
     private lateinit var searchHMPGIntent: Intent
@@ -56,8 +58,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        hospitalviewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
-        pharmacyViewModel = ViewModelProvider(this).get(PharmacyViewModel::class.java)
+        // hospitalviewModel = ViewModelProvider(this).get(HospitalViewModel::class.java)
+        // pharmacyViewModel = ViewModelProvider(this).get(PharmacyViewModel::class.java)
 
 
         hospitalviewModel._hospitalData.observe(this) { hospitalData ->
@@ -165,7 +167,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    // 버튼 등을 눌러 프로그래밍 방식으로 상태 변경 시
     private fun expandSheet() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
