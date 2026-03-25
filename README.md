@@ -131,6 +131,222 @@ com.project.petmedicalmap
 
 ---
 
+## 🛠 Hilt 적용 리팩토링(2026.03.25)
+
+## 적용 배경
+
+기존 프로젝트에서는 ViewModel에서 직접 Database 인스턴스를 생성하고 Repository 객체를 생성하는 구조였습니다.
+이 방식은 객체 생성 책임이 ViewModel에 집중되고, 생명주기 관리가 어려우며 보일러플레이트 코드가 증가하는 문제가 있었습니다.
+
+이를 해결하기 위해 DI(Dependency Injection) 라이브러리인 **Hilt**를 적용하여 의존성 관리 구조를 개선하였습니다.
+
+---
+
+## 변경 전 구조
+
+```
+View(MainActivity)
+        ↓
+ViewModel
+ - Application을 생성자로 전달받음
+ - Database 인스턴스 직접 생성
+ - Repository 객체 직접 생성
+        ↓
+Repository
+ - Dao를 생성자로 전달받음
+        ↓
+Room Database
+```
+
+### 문제점
+
+* ViewModel이 Database 생성 책임까지 가짐
+* Application 객체를 계속 전달해야 하는 구조
+* 객체 생성 코드 증가 (보일러 플레이트 코드)
+* 생명주기 관리 어려움
+* 의존성 관리가 분산됨
+
+---
+
+## 변경 후 구조
+
+```
+Hilt DI Container
+        ↓
+DatabaseModule (@Module)
+        ↓
+Repository (@Inject)
+        ↓
+ViewModel (@HiltViewModel)
+        ↓
+View (@AndroidEntryPoint)
+```
+
+### 개선된 점
+
+* 객체 생성 책임을 DI 컨테이너가 담당
+* 생명주기에 맞게 객체를 자동으로 관리
+* 보일러플레이트 코드 감소
+* 의존성 주입 구조 명확화
+* 유지보수성과 테스트 용이성 향상
+
+---
+
+## Hilt 적용 과정
+
+### 1. DI Container 생성
+
+Application 클래스에 `@HiltAndroidApp`을 추가하여 Hilt가 의존성 그래프를 생성할 수 있도록 설정하였습니다.
+
+```kotlin
+@HiltAndroidApp
+class PetApplication: Application()
+```
+
+---
+
+### 2. Room Database 의존성 제공
+
+Room Database는 외부 라이브러리이기 때문에 Hilt가 객체 생성 방법을 알 수 없습니다.
+따라서 `@Module`과 `@Provides`를 사용하여 Database와 Dao 객체 생성 방법을 정의하였습니다.
+
+```kotlin
+@Module
+@InstallIn(SingletonComponent::class)
+object DataBaseModule {
+
+    @Provides
+    @Singleton
+    fun providesDataBase(@ApplicationContext context: Context): AppDataBase {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            AppDataBase::class.java,
+            "app_db"
+        ).build()
+    }
+
+    @Provides
+    fun proidesHosDao(dataBase: AppDataBase): HospitalDao {
+        return dataBase.hosDao()
+    }
+
+    @Provides
+    fun providesPharDao(dataBase: AppDataBase): PharmacyDao {
+        return dataBase.pharDao()
+    }
+}
+```
+
+---
+
+### 3. Repository 의존성 주입
+
+Repository는 생성자에 `@Inject`를 사용하여 Hilt가 자동으로 객체를 생성하도록 하였습니다.
+
+또한 Context가 필요한 경우 `@ApplicationContext`를 사용하여 Application Context를 주입받도록 설정하였습니다.
+
+```kotlin
+@Singleton
+class HospitalRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val dao: HospitalDao
+)
+```
+
+```kotlin
+@Singleton
+class PharmacyRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val dao: PharmacyDao
+)
+```
+
+Repository에서는 JSON 데이터를 읽어와 Entity로 변환 후 Room Database에 저장하도록 구현하였습니다.
+
+---
+
+### 4. ViewModel 의존성 주입
+
+ViewModel에는 `@HiltViewModel`을 적용하고 생성자에 `@Inject`를 사용하여 Repository를 주입받도록 설정하였습니다.
+
+```kotlin
+@HiltViewModel
+class HospitalViewModel @Inject constructor(
+    private val application: Application,
+    private val repository: HospitalRepository
+) : AndroidViewModel(application)
+```
+
+```kotlin
+@HiltViewModel
+class PharmacyViewModel @Inject constructor(
+    private val application: Application,
+    private val repo: PharmacyRepository
+) : AndroidViewModel(application)
+```
+
+Hilt는 Application 객체도 자동으로 주입해주기 때문에 별도의 설정이 필요하지 않았습니다.
+
+---
+
+### 5. Activity에서 ViewModel 주입
+
+Activity에는 `@AndroidEntryPoint`를 적용하고 `by viewModels()`를 사용하여 ViewModel을 주입받도록 설정하였습니다.
+
+```kotlin
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+    private val pharmacyViewModel: PharmacyViewModel by viewModels()
+    private val hospitalviewModel: HospitalViewModel by viewModels()
+
+}
+```
+
+---
+
+## 리팩토링하며 새롭게 알게 된 점
+
+* Hilt에서 Context를 주입받을 때는 `@ApplicationContext`를 사용해야 함.
+* Application 객체는 별도의 qualifier 없이 자동 주입됨.
+* 가능한 많은 객체를 생성자 주입(`@Inject constructor`)으로 해결하는 것이 Hilt 사용 방식에 적합함.
+* `@Module`과 `@Provides`는 Room, Retrofit과 같은 외부 라이브러리 객체 생성 시에만 사용하는 것이 좋음.
+* Hilt는 객체의 생명주기를 자동으로 관리해주어 싱글톤 객체 관리가 편해짐.
+* 의존성 주입을 통해 보일러플레이트 코드가 줄어들고 코드 가독성이 개선되었음.
+
+---
+
+## 향후 개선 방향
+
+추후 리팩토링을 진행한다면 Hilt 뿐만 아니라 **Clean Architecture의 Domain Layer에 UseCase를 도입**하여
+HospitalViewModel과 PharmacyViewModel에서 중복되는 비즈니스 로직을 줄일 수 있을 것으로 생각됩니다.
+
+예상 구조:
+
+```
+ViewModel
+    ↓
+UseCase
+    ↓
+Repository
+```
+
+---
+
+## 리팩토링을 하며 느낀점
+
+* 객체 생성 책임을 직접 관리하지 않아도 된다는 점이 편리했습니다.
+* 생명주기에 맞게 객체를 자동으로 관리해주는 점이 인상적이었습니다.
+* 반복적으로 작성하던 보일러플레이트 코드가 크게 줄어들었습니다.
+* 의존성 주입을 통해 코드 구조가 더 명확해졌습니다.
+
+DI 개념으로만 공부했을 때보다 실제 프로젝트에 적용해보니 Hilt가 왜 사용되는지 체감할 수 있었습니다.
+향후 프로젝트에서도 DI 구조를 적극적으로 활용할 계획입니다..
+
+
+
+---
+
 ## 📷 실행 화면 (Screenshots & GIFs)
 
 ### 메인 화면
